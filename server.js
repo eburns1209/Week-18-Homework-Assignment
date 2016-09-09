@@ -6,14 +6,20 @@ var bodyParser = require('body-parser');
 var express = require('express');
 var app = express();
 
-// View engine setup
-app.set('views', path.join(__dirname, 'views'));
-
-// Set up handlebars
+// Require handlebars
 var exphbs = require('express-handlebars');
-app.engine('handlebars', exphbs({
-    defaultLayout: 'main'
-}));
+// Create `ExpressHandlebars` instance with a default layout.
+var hbs = exphbs.create({
+  defaultLayout: 'main',
+  // Specify helpers which are only registered on this instance.
+  helpers: {
+    addOne: function(value, options){
+      return parseInt(value) + 1;
+    }
+  }
+});
+// Set up view engine
+app.engine('handlebars', hbs.engine);
 app.set('view engine', 'handlebars');
 
 // Require request and cheerio. This makes the scraping possible
@@ -95,7 +101,8 @@ app.get('/', function(req, res) {
         title: data.title,
         synopsis: data.synopsis,
         _id: data._id,
-        articleURL: data.articleURL
+        articleURL: data.articleURL,
+        comments: data.comments
       });
     })
 });
