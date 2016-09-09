@@ -26,8 +26,9 @@ app.set('view engine', 'handlebars');
 var request = require('request');
 var cheerio = require('cheerio');
 
-// Require mongoose
+// Require mongoose and mongodb objectid
 var mongoose = require('mongoose');
+var ObjectId = require('mongojs').ObjectID;
 
 // Database configuration
 mongoose.connect('mongodb://localhost/scraper');
@@ -94,8 +95,8 @@ app.get('/', function(req, res) {
     .findOne()
     .exec(function(err,data) {
       if (err) return console.error(err);
+      console.log(data)
       // If successful render first data
-      console.log(data);
       res.render('index', {
         imgURL: data.imgURL,
         title: data.title,
@@ -137,12 +138,37 @@ app.get('/prev/:id', function(req, res) {
 
 // Add comment data to the db
 app.post('/comment/:id', function(req, res) {
-  // Update scraped data
+  // Update scraped data with comment
   ScrapedData.findByIdAndUpdate(
     req.params.id,
-    {$push: {comments: req.body.comment}},
+    {$push: {
+      comments: {
+        text: req.body.comment
+      }
+    }},
     {upsert: true, new: true},
     function(err, data) {
+      if (err) return console.error(err);
+      res.json(data.comments);
+    }
+  );
+});
+
+// Remove comment data from the db
+app.post('/remove/:id', function(req, res) {
+  console.log(req.params.id)
+  console.log(req.body.id)
+  // Update scraped data and remove comment
+  ScrapedData.findByIdAndUpdate(
+    req.params.id,
+    {$pull: {
+      comments: {
+        _id: req.body.id
+      }
+    }},
+    {new: true},
+    function(err, data) {
+      console.log(data.comments)
       if (err) return console.error(err);
       res.json(data.comments);
     }

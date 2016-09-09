@@ -22,7 +22,9 @@ var ScrapedDataSchema = Schema({
 		required: true
 	},
 	comments: [{
-		type: String 
+		text: {
+			type: String 
+		}
 	}]
 });
 

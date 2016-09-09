@@ -27,9 +27,11 @@
 <div id="arms2">
   <div class="comments">
     <h3>Previously Left Comments:</h3>
-    {{#each this.comments as |value key|}}
-      <p>{{ addOne key }}. {{ value }}</p>
-    {{/each}}
+    <div id="comment-holder">
+      {{#each this.comments as |value key|}}
+        <p>{{ addOne key }}. {{ value.text }} <a href="#" class="remove" data-id="{{ value._id }}">X</a></p>
+      {{/each}}
+    </div>
   </div>
   <img src="img/arms.png"/>
 </div>

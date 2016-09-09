@@ -25,7 +25,9 @@ function buttons(res) {
 	$('#picture>img').attr('src', res[0].imgURL);
 	$('#content>h2').text(res[0].title);
 	$('#content>p').text(res[0].synopsis);
-	$('a.articleURL').attr('href', res[0].articleURL)
+	$('a.articleURL').attr('href', res[0].articleURL);
+	// Update comments
+	comments(res[0].comments);
 	// Check if previous button exists
 	$buttons = $('#buttons');
 	if ($buttons.children().length === 1) {
@@ -47,6 +49,16 @@ function buttons(res) {
 	$('#post').attr('data-id',res[0]._id);
 }
 
+function comments(obj) {
+	$('#comment-holder').remove();
+	var $commentHolder = $('<div>').attr('id','comment-holder');
+	for (var i=0; i<obj.length; i++) {
+		var $p = $('<p>').text((i+1) + '. ' + obj[i].text);
+		$commentHolder.append($p);
+	}
+	$('#arms2>div.comments').append($commentHolder);
+}
+
 // Listen for post button
 $(document).on('click','#post', function() {
 	// Get id from button
@@ -58,6 +70,22 @@ $(document).on('click','#post', function() {
 	$comment.val('');
 	// Get next article
 	$.post(baseURL + "/comment/" + id, {comment: comment}, function(res) {
-		console.log(res);
+		console.log(res)
+		// Update comments
+		comments(res);
 	});
+});
+
+// Listen for remove click
+$(document).on('click','.remove', function() {
+	// Get id from post button
+	var id = $('#post').attr('data-id');
+	// Get remove id
+	var removeID = $(this).attr('data-id');
+	// Get next article
+	$.post(baseURL + "/remove/" + id, {id: removeID}, function(res) {
+		// Update comments
+		comments(res);
+	});
+	return false;
 });
