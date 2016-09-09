@@ -42,6 +42,22 @@ function buttons(res) {
 			$('#prev').attr('data-id',res[0]._id);
 		}		
 	}
-	// Update next button id
+	// Update next and post button id
 	$('#next').attr('data-id',res[0]._id);
+	$('#post').attr('data-id',res[0]._id);
 }
+
+// Listen for post button
+$(document).on('click','#post', function() {
+	// Get id from button
+	var id = $(this).attr('data-id');
+	// Get the comment
+	$comment = $("#comment");
+	var comment = $comment.val().trim();
+	// Clear the comment
+	$comment.val('');
+	// Get next article
+	$.post(baseURL + "/comment/" + id, {comment: comment}, function(res) {
+		console.log(res);
+	});
+});

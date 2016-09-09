@@ -1,6 +1,9 @@
+// Dependencies
+var path = require('path');
+var bodyParser = require('body-parser');
+
 // Initialize Express app
 var express = require('express');
-var path = require('path');
 var app = express();
 
 // View engine setup
@@ -29,7 +32,7 @@ db.on('error', function(err) {
   console.log('Database Error:', err);
 });
 
-// Require our scrapedDataModel
+// Require our scrapedData and comment models
 var ScrapedData = require('./scrapedDataModel');
 
 // Scrape data when app starts
@@ -39,58 +42,60 @@ var options = {
     'User-Agent': 'Mozilla/5.0 (Windows; U; Windows NT 5.1; en-US; rv:1.8.1.13) Gecko/20080311 Firefox/2.0.0.13'
   }
 };
-// make a request for the news section of bodybuilding.com
+// Make a request for the news section of bodybuilding.com
 request(options, function(error, response, html) {
-  // load the html body from request into cheerio
+  // Load the html body from request into cheerio
   var $ = cheerio.load(html);
-  // for each element with a "new-content-block" class
+  // For each element with a "new-content-block" class
   $('div.new-content-block').each(function(i, element) {
-    // save the div and a tag
+    // Save the div and a tag
     var $a = $(this).children('a');
     var $div = $(this).children('div');
-    // save the article url
+    // Save the article url
     var articleURL = $a.attr('href');
-    // save the img url of each element
+    // Save the img url of each element
     var imgURL = $a.children('img').attr('src');
-    // save the title text
+    // Save the title text
     var title = $div.children('h4').text();
-    // save the synopsis text
+    // Save the synopsis text
     var synopsis = $div.children('p').text();
-    // create mongoose model
+    // Create mongoose model
     var scrapedData = new ScrapedData({
       title: title,
       imgURL: imgURL,
       synopsis: synopsis,
       articleURL: articleURL
     });
-    // save data
+    // Save data
     scrapedData.save(function(err) {
       if (err) {
         //console.log(err);
-      } else {
-        //console.log('Saved');
       }
-    })
+      //console.log('Saved');
+    });
   });
 });
 
+// Express middleware
+app.use(bodyParser.urlencoded({
+  extended: false
+}));
 app.use(express.static('public'));
 
 // Main route send main page
 app.get('/', function(req, res) {
   ScrapedData
-    .find()
-    .sort({_id: 1 })
-    .limit(1)
+    .findOne()
     .exec(function(err,data) {
       if (err) return console.error(err);
       // If successful render first data
+      console.log(data);
       res.render('index', {
-        imgURL: data[0].imgURL,
-        title: data[0].title,
-        synopsis: data[0].synopsis,
-        _id: data[0]._id,
-        articleURL: data[0].articleURL
+        imgURL: data.imgURL,
+        title: data.title,
+        synopsis: data.synopsis,
+        _id: data._id,
+        articleURL: data.articleURL
       });
     })
 });
@@ -123,7 +128,21 @@ app.get('/prev/:id', function(req, res) {
     })
 });
 
-// listen on port 3000
+// Add comment data to the db
+app.post('/comment/:id', function(req, res) {
+  // Update scraped data
+  ScrapedData.findByIdAndUpdate(
+    req.params.id,
+    {$push: {comments: req.body.comment}},
+    {upsert: true, new: true},
+    function(err, data) {
+      if (err) return console.error(err);
+      res.json(data.comments);
+    }
+  );
+});
+
+// Listen on port 3000
 app.listen(3000, function() {
   console.log('App running on port 3000!');
 });
