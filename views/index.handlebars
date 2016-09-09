@@ -1,17 +1,21 @@
 <h1>Body Building News</h1>
-<div id="picture">
-  <img src="{{ this.imgURL }}">
-</div>
+<a class="articleURL" href="{{ this.articleURL }}">
+  <div id="picture">
+    <img src="{{ this.imgURL }}">
+  </div>
+</a>
 <div id="lifter">
   <img src="img/snatch.png"/>
   <div id="buttons">
     <button id="next" data-id="{{ this._id }}">Next</button>
   </div>
 </div>
-<div id="content">
-  <h2>{{ this.title }}</h2>
-  <p>{{ this.synopsis }}</p>
-</div>
+<a class="articleURL" href="{{ this.articleURL }}">
+  <div id="content">
+    <h2>{{ this.title }}</h2>
+    <p>{{ this.synopsis }}</p>
+  </div>
+</a>
 <div id="arms1">
   <div class="comments">
     <h3>Post a Comment:</h3>

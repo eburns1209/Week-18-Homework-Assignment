@@ -25,6 +25,7 @@ function buttons(res) {
 	$('#picture>img').attr('src', res[0].imgURL);
 	$('#content>h2').text(res[0].title);
 	$('#content>p').text(res[0].synopsis);
+	$('a.articleURL').attr('href', res[0].articleURL)
 	// Check if previous button exists
 	$buttons = $('#buttons');
 	if ($buttons.children().length === 1) {

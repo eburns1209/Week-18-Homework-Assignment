@@ -89,7 +89,8 @@ app.get('/', function(req, res) {
         imgURL: data[0].imgURL,
         title: data[0].title,
         synopsis: data[0].synopsis,
-        _id: data[0]._id
+        _id: data[0]._id,
+        articleURL: data[0].articleURL
       });
     })
 });
