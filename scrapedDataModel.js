@@ -4,14 +4,22 @@ var mongoose = require('mongoose');
 // new Schema
 var ScrapedDataSchema = new mongoose.Schema({
 	title: {
-		type: String
+		type: String,
+		required: true,
+		unique: true // make sure the article is not repeated again
 	},
 	imgURL: {
-		type: String
+		type: String,
+		required: true
 	},
-	title: {
-		synopsis: String
+	synopsis: {
+		type: String,
+		required: true
 	},
+	articleURL: {
+		type: String,
+		required: true
+	}
 })
 
 // use the abvoe schema to make the ScrapedData model

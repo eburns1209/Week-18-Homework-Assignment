@@ -1,6 +1,17 @@
 // Initialize Express app
 var express = require('express');
+var path = require('path');
 var app = express();
+
+// View engine setup
+app.set('views', path.join(__dirname, 'views'));
+
+// Set up handlebars
+var exphbs = require('express-handlebars');
+app.engine('handlebars', exphbs({
+    defaultLayout: 'main'
+}));
+app.set('view engine', 'handlebars');
 
 // Require request and cheerio. This makes the scraping possible
 var request = require('request');
@@ -37,69 +48,78 @@ request(options, function(error, response, html) {
     // save the div and a tag
     var $a = $(this).children('a');
     var $div = $(this).children('div');
+    // save the article url
+    var articleURL = $a.attr('href');
     // save the img url of each element
     var imgURL = $a.children('img').attr('src');
     // save the title text
     var title = $div.children('h4').text();
     // save the synopsis text
     var synopsis = $div.children('p').text();
-
-    // if this element had all three components
-    if (imgURL && title && synopsis) {
-      // save the data in the scrapedData db
-      db.scrapedData.update(
-        {
-          title: title
-        },
-        {
-          $set: {
-            imgURL: imgURL,
-            synopsis: synopsis
-          }
-        },
-        {
-          upsert: true
-        },
-      function(err, saved) {
-        // if there's an error during this query
-        if (err) {
-          // log the error
-          console.log(err);
-        } 
-        // otherwise, 
-        else {
-          // log the saved data
-          console.log(saved);
-        }
-      });
-    }
+    // create mongoose model
+    var scrapedData = new ScrapedData({
+      title: title,
+      imgURL: imgURL,
+      synopsis: synopsis,
+      articleURL: articleURL
+    });
+    // save data
+    scrapedData.save(function(err) {
+      if (err) {
+        //console.log(err);
+      } else {
+        //console.log('Saved');
+      }
+    })
   });
 });
 
-// Main route (simple Hello World Message)
+app.use(express.static('public'));
+
+// Main route send main page
 app.get('/', function(req, res) {
-  res.send("Hello world");
+  ScrapedData
+    .find()
+    .sort({_id: 1 })
+    .limit(1)
+    .exec(function(err,data) {
+      if (err) return console.error(err);
+      // If successful render first data
+      res.render('index', {
+        imgURL: data[0].imgURL,
+        title: data[0].title,
+        synopsis: data[0].synopsis,
+        _id: data[0]._id
+      });
+    })
 });
 
-// Retrieve data from the db
-app.get('/all', function(req, res) {
-  // find all results from the scraoedData collection in the db
-  db.scrapedData.find({}, function(err, found) {
-    // throw any errors to the console
-    if (err) {
-      console.log(err);
-    } 
-    // if there are no errors, send the data to the browser as a json
-    else {
-      res.json(found);
-    }
-  });
+// Retrieve next data from the db
+app.get('/next/:id', function(req, res) {
+  ScrapedData
+    .find({
+      _id: {$gt: req.params.id}
+    })
+    .sort({_id: 1 })
+    .limit(1)
+    .exec(function(err,data) {
+      if (err) return console.error(err);
+      res.json(data);
+    })
 });
 
-// Scrape data from one site and place it into the mongodb db
-app.get('/scrape', function(req, res) {
-  // this will send a "search complete" message to the browser
-  res.send("Scrape Complete");
+// Retrieve prev data from the db
+app.get('/prev/:id', function(req, res) {
+  ScrapedData
+    .find({
+      _id: {$lt: req.params.id}
+    })
+    .sort({_id: -1 })
+    .limit(1)
+    .exec(function(err,data) {
+      if (err) return console.error(err);
+      res.json(data);
+    })
 });
 
 // listen on port 3000
