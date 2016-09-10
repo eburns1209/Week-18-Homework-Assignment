@@ -53,7 +53,7 @@ function comments(obj) {
 	$('#comment-holder').remove();
 	var $commentHolder = $('<div>').attr('id','comment-holder');
 	for (var i=0; i<obj.length; i++) {
-		var $p = $('<p>').html((i+1) + '. ' + obj[i].text + ' <a href="#" class="remove" data-id="' + obj[i]._id + '">X</a>');
+		var $p = $('<p>').html('<span class="number">' + (i+1) + '</span> ' + obj[i].text + ' <a href="#" class="remove" data-id="' + obj[i]._id + '">X</a>');
 		$commentHolder.append($p);
 	}
 	$('#arms2>div.comments').append($commentHolder);

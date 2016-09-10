@@ -29,7 +29,7 @@
     <h3>Previously Left Comments:</h3>
     <div id="comment-holder">
       {{#each this.comments as |value key|}}
-        <p>{{ addOne key }}. {{ value.text }} <a href="#" class="remove" data-id="{{ value._id }}">X</a></p>
+        <p><span class="number">{{ addOne key }}</span> {{ value.text }} <a href="#" class="remove" data-id="{{ value._id }}">X</a></p>
       {{/each}}
     </div>
   </div>

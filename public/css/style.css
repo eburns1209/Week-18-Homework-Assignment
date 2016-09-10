@@ -17,6 +17,52 @@ h1 {
 	margin-bottom: 30px;
 }
 
+h2 {
+	margin-top: 20px;
+	font-size: 20px;
+}
+
+h3 {
+	margin-top: 30px;
+	font-size: 40px;
+	margin-bottom: 30px;
+}
+
+p {
+	margin-top: 20px;
+	font-size: 16px;
+}
+
+button {
+  background-color: #000;
+  border: none;
+  border-radius: 5px;
+  color: white;
+  padding: 6px 8px;
+  text-align: center;
+  text-decoration: none;
+  display: inline-block;
+  font-size: 16px;
+}
+
+button:hover {
+  background-color: #222;
+}
+
+input {
+	padding: 6px 8px;
+}
+
+a {
+	text-decoration: none;
+	color: red;
+	font-size: 20px;
+}
+
+#comment-holder>p {
+	margin-top: 0;
+}
+
 #wrapper {
 	width: 1600px;
 	height: 100%;
@@ -66,6 +112,11 @@ h1 {
 	right: 25px;
 }
 
+.number {
+	font-size: 30px;
+	font-weight: bold;
+}
+
 .comments {
 	position: relative;
 	border: 2px solid black;
@@ -74,6 +125,14 @@ h1 {
 	margin-bottom: -25px;
 	background: white;
 	overflow: auto;
+}
+
+.vertical-center {
+  min-height: 100%;  /* Fallback for browsers do NOT support vh unit */
+  min-height: 100vh; /* These two lines are counted as one :-)       */
+
+  display: flex;
+  align-items: center;
 }
 
 @media (max-width: 1600px) {
