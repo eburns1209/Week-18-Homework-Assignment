@@ -95,7 +95,6 @@ app.get('/', function(req, res) {
     .findOne()
     .exec(function(err,data) {
       if (err) return console.error(err);
-      console.log(data)
       // If successful render first data
       res.render('index', {
         imgURL: data.imgURL,
@@ -156,8 +155,6 @@ app.post('/comment/:id', function(req, res) {
 
 // Remove comment data from the db
 app.post('/remove/:id', function(req, res) {
-  console.log(req.params.id)
-  console.log(req.body.id)
   // Update scraped data and remove comment
   ScrapedData.findByIdAndUpdate(
     req.params.id,
@@ -168,7 +165,6 @@ app.post('/remove/:id', function(req, res) {
     }},
     {new: true},
     function(err, data) {
-      console.log(data.comments)
       if (err) return console.error(err);
       res.json(data.comments);
     }

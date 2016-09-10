@@ -53,7 +53,7 @@ function comments(obj) {
 	$('#comment-holder').remove();
 	var $commentHolder = $('<div>').attr('id','comment-holder');
 	for (var i=0; i<obj.length; i++) {
-		var $p = $('<p>').text((i+1) + '. ' + obj[i].text);
+		var $p = $('<p>').html((i+1) + '. ' + obj[i].text + ' <a href="#" class="remove" data-id="' + obj[i]._id + '">X</a>');
 		$commentHolder.append($p);
 	}
 	$('#arms2>div.comments').append($commentHolder);
@@ -70,7 +70,6 @@ $(document).on('click','#post', function() {
 	$comment.val('');
 	// Get next article
 	$.post(baseURL + "/comment/" + id, {comment: comment}, function(res) {
-		console.log(res)
 		// Update comments
 		comments(res);
 	});
